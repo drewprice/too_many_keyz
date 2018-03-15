@@ -16,6 +16,16 @@ map_ids() {
   jq -jr 'map(.id|tostring) | join("\n")'
 }
 
-get $KEY_URL \
-  | map_ids \
-  | while read line; do delete $KEY_URL/$line; done
+keys_remaining() {
+  get $KEY_URL | jq -r '.[0] != null'
+}
+
+delete_keys() {
+  get $KEY_URL \
+    | map_ids \
+    | while read ID; do delete $KEY_URL/$ID; done
+}
+
+get $KEY_URL
+
+#while [ `keys_remaining` = 'true' ]; do delete_keys; done
