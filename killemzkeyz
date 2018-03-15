@@ -1,0 +1,21 @@
+#! /bin/bash
+
+source ./.env
+
+KEY_URL=https://api.github.com/user/keys
+
+get() {
+  curl -u $USERNAME:$TOKEN $1
+}
+
+delete() {
+  curl -X "DELETE" -u $USERNAME:$TOKEN $1
+}
+
+map_ids() {
+  jq -jr 'map(.id|tostring) | join("\n")'
+}
+
+get $KEY_URL \
+  | map_ids \
+  | while read line; do delete $KEY_URL/$line; done
